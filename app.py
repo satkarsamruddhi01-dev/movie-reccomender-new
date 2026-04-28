@@ -20,7 +20,7 @@ model = NearestNeighbors(n_neighbors=10, metric='cosine')
 model.fit(vectors)
 
 # ---------------- TMDB API KEY ----------------
-API_KEY = "YOUR_TMDB_API_KEY"
+API_KEY = "fa71fda8ec0211d5387de76ff7e4b0b9"
 
 # ---------------- FETCH POSTER ----------------
 def fetch_poster(movie_id):
