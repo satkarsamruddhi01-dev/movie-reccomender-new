@@ -1,4 +1,3 @@
-
 import streamlit as st
 import pickle
 import requests
@@ -20,7 +19,7 @@ model = NearestNeighbors(n_neighbors=10, metric='cosine')
 model.fit(vectors)
 
 # ---------------- TMDB API KEY ----------------
-API_KEY = "fa71fda8ec0211d5387de76ff7e4b0b9"
+API_KEY = "YOUR_TMDB_API_KEY"
 
 # ---------------- FETCH POSTER ----------------
 def fetch_poster(movie_id):
@@ -32,10 +31,11 @@ def fetch_poster(movie_id):
             return "https://image.tmdb.org/t/p/w500" + data["poster_path"]
         else:
             return "https://via.placeholder.com/300x450.png?text=No+Poster"
+
     except:
         return "https://via.placeholder.com/300x450.png?text=No+Poster"
 
-# ---------------- UI STYLE ----------------
+# ---------------- UI ----------------
 st.markdown(
     """
     <style>
@@ -52,19 +52,17 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# ---------------- TITLE ----------------
 st.title("🎬 Netflix Movie Recommender")
 
-# ---------------- SELECT MOVIE ----------------
 selected_movie = st.selectbox("Select Movie", movies['title'].values)
 
-# ---------------- RECOMMEND BUTTON ----------------
+# ---------------- BUTTON ----------------
 if st.button("Recommend"):
 
     row = movies[movies['title'] == selected_movie].iloc[0]
     index = movies[movies['title'] == selected_movie].index[0]
 
-    # Similar Movies
+    # ---------------- Similar Movies ----------------
     st.subheader("🔥 Similar Movies")
 
     distances, indices = model.kneighbors([vectors[index]])
@@ -76,37 +74,47 @@ if st.button("Recommend"):
             st.image(fetch_poster(movies.iloc[i].movie_id))
             st.write(movies.iloc[i].title)
 
-    # Same Genre
-   st.subheader("🎭 Same Genre")
+    # ---------------- Same Genre ----------------
+    if len(row['genres']) > 0:
+        genre = row['genres'][0]
 
-genre_movies = movies[movies['genres'].apply(lambda x: genre in x)].head(5)
+        st.subheader("🎭 Same Genre")
 
-cols = st.columns(5)
+        genre_movies = movies[movies['genres'].apply(lambda x: genre in x)].head(5)
 
-for count, (_, row) in enumerate(genre_movies.iterrows()):
-    with cols[count]:
-        st.image(fetch_poster(row.movie_id))
-        st.write(row.title)
-    # Same Actor
-  st.subheader("🌟 Same Actor")
+        cols = st.columns(5)
 
-actor_movies = movies[movies['cast'].apply(lambda x: actor in x)].head(5)
+        for count, (_, r) in enumerate(genre_movies.iterrows()):
+            with cols[count]:
+                st.image(fetch_poster(r.movie_id))
+                st.write(r.title)
 
-cols = st.columns(5)
+    # ---------------- Same Actor ----------------
+    if len(row['cast']) > 0:
+        actor = row['cast'][0]
 
-for count, (_, row) in enumerate(actor_movies.iterrows()):
-    with cols[count]:
-        st.image(fetch_poster(row.movie_id))
-        st.write(row.title)
+        st.subheader("🌟 Same Actor")
 
-    # Same Director
-   st.subheader("🎬 Same Director")
+        actor_movies = movies[movies['cast'].apply(lambda x: actor in x)].head(5)
 
-director_movies = movies[movies['crew'].apply(lambda x: director in x)].head(5)
+        cols = st.columns(5)
 
-cols = st.columns(5)
+        for count, (_, r) in enumerate(actor_movies.iterrows()):
+            with cols[count]:
+                st.image(fetch_poster(r.movie_id))
+                st.write(r.title)
 
-for count, (_, row) in enumerate(director_movies.iterrows()):
-    with cols[count]:
-        st.image(fetch_poster(row.movie_id))
-        st.write(row.title)
+    # ---------------- Same Director ----------------
+    if len(row['crew']) > 0:
+        director = row['crew'][0]
+
+        st.subheader("🎬 Same Director")
+
+        director_movies = movies[movies['crew'].apply(lambda x: director in x)].head(5)
+
+        cols = st.columns(5)
+
+        for count, (_, r) in enumerate(director_movies.iterrows()):
+            with cols[count]:
+                st.image(fetch_poster(r.movie_id))
+                st.write(r.title)
