@@ -77,34 +77,36 @@ if st.button("Recommend"):
             st.write(movies.iloc[i].title)
 
     # Same Genre
-    if len(row['genres']) > 0:
-        genre = row['genres'][0]
+   st.subheader("🎭 Same Genre")
 
-        st.subheader("🎭 Same Genre")
+genre_movies = movies[movies['genres'].apply(lambda x: genre in x)].head(5)
 
-        genre_movies = movies[movies['genres'].apply(lambda x: genre in x)]
+cols = st.columns(5)
 
-        for title in genre_movies['title'].head(5).values:
-            st.write("👉", title)
-
+for count, (_, row) in enumerate(genre_movies.iterrows()):
+    with cols[count]:
+        st.image(fetch_poster(row.movie_id))
+        st.write(row.title)
     # Same Actor
-    if len(row['cast']) > 0:
-        actor = row['cast'][0]
+  st.subheader("🌟 Same Actor")
 
-        st.subheader("🌟 Same Actor")
+actor_movies = movies[movies['cast'].apply(lambda x: actor in x)].head(5)
 
-        actor_movies = movies[movies['cast'].apply(lambda x: actor in x)]
+cols = st.columns(5)
 
-        for title in actor_movies['title'].head(5).values:
-            st.write("👉", title)
+for count, (_, row) in enumerate(actor_movies.iterrows()):
+    with cols[count]:
+        st.image(fetch_poster(row.movie_id))
+        st.write(row.title)
 
     # Same Director
-    if len(row['crew']) > 0:
-        director = row['crew'][0]
+   st.subheader("🎬 Same Director")
 
-        st.subheader("🎬 Same Director")
+director_movies = movies[movies['crew'].apply(lambda x: director in x)].head(5)
 
-        director_movies = movies[movies['crew'].apply(lambda x: director in x)]
+cols = st.columns(5)
 
-        for title in director_movies['title'].head(5).values:
-            st.write("👉", title)
+for count, (_, row) in enumerate(director_movies.iterrows()):
+    with cols[count]:
+        st.image(fetch_poster(row.movie_id))
+        st.write(row.title)
